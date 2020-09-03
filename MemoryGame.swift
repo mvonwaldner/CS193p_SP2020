@@ -8,57 +8,64 @@
 import Foundation
 
 struct MemoryGame<CardContent> where CardContent: Equatable {
-	var cards: Array<Card>
 	
-	// state in two places, index is also determinable from cards
+	var cards: Array<Card>
+	let theme: Theme
+	var score: Int = 0
 	var indexOfTheOneAndOnlyFaceUpCard: Int? {
-		get { cards.indices.filter { cards[$0].isFaceUp }.only } // can now be a let
-//			for index in cards.indices {
-//				if cards[index].isFaceUp {
-//					faceUpCardIndices.append(index)
-//				}
-//			}
-//			if faceUpCardIndices.count == 1{
-//				return faceUpCardIndices.first
-//			} else {
-//				return nil
-//			} // do extension of array to have var that does this
-		// want to get index from `cards`
-		// need to look at all cards and see which ones are faceup
+		get { cards.indices.filter { cards[$0].isFaceUp }.only }
 		set {
 			for index in cards.indices {
-//				if index == newValue {
 					cards[index].isFaceUp = index == newValue
-//				} else {
-//					cards[index].isFaceUp = false
-//				}
 			}
 		} //  turn other cards face down
-		// reacting when someone sets the index of the one and only faceup card
-		// set other cards to face down
 	}
 	
 	mutating func choose(card: Card) {
-		print("card chosen: \(card)")
+			
 		if let chosenIndex: Int = cards.firstIndex(matching: card), !cards[chosenIndex].isFaceUp, !cards[chosenIndex].isMatched {
+		// scenario where chosenIndex is not face up, and it is not matched (clicking on a face down card, either first pick or second pick)
+
 			if let potentialMatchIndex = indexOfTheOneAndOnlyFaceUpCard {
+			// scenario where there was already a face up card (the indexOFTheOneAndOnlyFaceUpCard) (second pick)
+
+				
 				if cards[chosenIndex].content == cards[potentialMatchIndex].content {
+				// scenario of a match
+					
+					cards[chosenIndex].timesChosen += 1
 					cards[chosenIndex].isMatched = true
 					cards[potentialMatchIndex].isMatched = true
+					self.score += 2
+					
+				} else {
+				// scenario of a mismatch
+					
+					cards[chosenIndex].timesChosen += 1
+					if cards[chosenIndex].timesChosen > 1, cards[potentialMatchIndex].timesChosen > 1 {
+						self.score -= 2
+					} else if cards[chosenIndex].timesChosen > 1 {
+						self.score -= 1
+					}
 				}
-//				indexOfTheOneAndOnlyFaceUpCard = nil // two cards faceup, so this needs to be nil now because there are two
+				print("ending card data for the 2nd pick card: \(cards[chosenIndex])")
+			
+			
 			} else {
-//				for index in cards.indices {
-//					cards[index].isFaceUp = false
-//				}
+			// scenario where there was not already a face up card (first pick)
+				
 				indexOfTheOneAndOnlyFaceUpCard = chosenIndex // it will be the only faceup card. Just turned all of others face down, and will turn the other one face up in code right outside of this conditional
+				self.cards[chosenIndex].timesChosen += 1
+				print("ending card data for the 1st pick card: \(self.cards[chosenIndex])")
 			}
 			self.cards[chosenIndex].isFaceUp = true // turn our card faceup
-//			self.cards[chosenIndex].isFaceUp = !self.cards[chosenIndex].isFaceUp // copies card out of array
-		} // choose does nothing if we can't find card within our cards
+			
+		} // choose(card:) does nothing if we can't find card within our cards, and also this would be a case of clicking on a face up card
+		
 	} // all functions that modify self have to be marked as mutating
 	
-	init(numberOfPairsOfCards: Int, cardContentFactory: (Int) -> CardContent) {
+	init(theme: Theme, numberOfPairsOfCards: Int, cardContentFactory: (Int) -> CardContent) {
+		self.theme = theme
 		cards = Array<Card>() // cards is now an empty array of cards
 		for pairIndex in 0..<numberOfPairsOfCards {
 			let content = cardContentFactory(pairIndex)
@@ -73,5 +80,6 @@ struct MemoryGame<CardContent> where CardContent: Equatable {
 		var isFaceUp: Bool = false
 		var isMatched: Bool = false
 		var content: CardContent
+		var timesChosen: Int = 0
 	}
 }
