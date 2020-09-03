@@ -11,16 +11,21 @@ struct EmojiMemoryGameView: View {
 	@ObservedObject var viewModel: EmojiMemoryGame // pointer to VM
 	
     var body: some View {
-		Grid(viewModel.cards) { card in
-			CardView(card: card).onTapGesture {
-				self.viewModel.choose(card: card)
+		VStack {
+			Text(viewModel.activeThemeName + " Theme!").font(.largeTitle).bold()
+			Divider()
+			Text("Score: \(viewModel.score)").font(.headline).bold()
+			Grid(viewModel.cards) { card in
+				CardView(card: card).aspectRatio(2/3, contentMode: .fit).onTapGesture {
+					self.viewModel.choose(card: card)
+				}
+				.padding(5)
 			}
-//			.aspectRatio(2/3, contentMode: .fit)
-			.padding(5)
-
+			.padding()
+			.foregroundColor( self.viewModel.activeThemeColor )
+			Divider()
+			Button("New Game") { self.viewModel.restart() }
 		}
-		.padding()
-		.foregroundColor(Color.orange)
 	}
 }
 // container for some variables
