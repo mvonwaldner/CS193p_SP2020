@@ -7,8 +7,8 @@
 
 import SwiftUI // VM knows how the model will be drawn on screen, in this case as an EmojiMemoryGame
 
-class EmojiMemoryGame {
-	private var model: MemoryGame<String> = EmojiMemoryGame.createMemoryGame()
+class EmojiMemoryGame: ObservableObject {
+	@Published private var model: MemoryGame<String> = EmojiMemoryGame.createMemoryGame()
 	// access to model, probably would call this game or memorygame
 	
 	static func createMemoryGame() -> MemoryGame<String> {
