@@ -12,19 +12,20 @@ class EmojiMemoryGame: ObservableObject {
 	// access to model, probably would call this game or memorygame
 	
 	
-	static func createMemoryGame() -> MemoryGame<String> {
+	private static func createMemoryGame() -> MemoryGame<String> {
 		let activeTheme = createdThemes[Int.random(in: 0..<createdThemes.count)]
 		let emojis: Array<String> = activeTheme.emojis
 		return MemoryGame<String>(theme: activeTheme, numberOfPairsOfCards: activeTheme.numberOfPairsOfCards!) { pairIndex in
 			return emojis[pairIndex]
 		}
 	} // now a function on the type
+	// likely don't want other things to create a memory game
 
 	// MARK: - Access to the Model
 	
 	var cards: Array<MemoryGame<String>.Card> {
 		model.cards
-	}
+	} // this doesn't have to be private because it's already read-only
 	
 	var score: Int {
 		model.score
