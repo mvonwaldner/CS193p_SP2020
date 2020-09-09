@@ -9,10 +9,11 @@ import Foundation
 
 struct MemoryGame<CardContent> where CardContent: Equatable {
 	
-	var cards: Array<Card>
+	private(set) var cards: Array<Card> // don't want anyone messing with cards' properties
+	// setting is private, reading is not
 	let theme: Theme
 	var score: Int = 0
-	var indexOfTheOneAndOnlyFaceUpCard: Int? {
+	private var indexOfTheOneAndOnlyFaceUpCard: Int? {
 		get { cards.indices.filter { cards[$0].isFaceUp }.only }
 		set {
 			for index in cards.indices {
@@ -63,6 +64,7 @@ struct MemoryGame<CardContent> where CardContent: Equatable {
 		} // choose(card:) does nothing if we can't find card within our cards, and also this would be a case of clicking on a face up card
 		
 	} // all functions that modify self have to be marked as mutating
+	// can't be private - how we play our game
 	
 	init(theme: Theme, numberOfPairsOfCards: Int, cardContentFactory: (Int) -> CardContent) {
 		self.theme = theme
@@ -75,11 +77,12 @@ struct MemoryGame<CardContent> where CardContent: Equatable {
 		cards.shuffle()
 	} // just initializing variables, therefore doesn't have a return value
 	
+	
 	struct Card: Identifiable {
 		let id: Int
 		var isFaceUp: Bool = false
 		var isMatched: Bool = false
 		var content: CardContent
 		var timesChosen: Int = 0
-	}
+	} // only way you can get a card is through cards array which is already private(set)
 }
