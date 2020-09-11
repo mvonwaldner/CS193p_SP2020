@@ -47,7 +47,7 @@ class EmojiMemoryGame: ObservableObject {
 	} // this is the part that could be a SQL database command
 
 	// restart function for New Game button
-	func restart() -> Void {
+	func restart() {
 		model = EmojiMemoryGame.createMemoryGame()
 	}
 	

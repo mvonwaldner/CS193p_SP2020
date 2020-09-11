@@ -13,6 +13,16 @@ struct Pie: Shape {
 	var endAngle: Angle
 	var clockwise: Bool = false
 	
+	var animatableData: AnimatablePair<Double, Double> {
+		get {
+			AnimatablePair(startAngle.radians, endAngle.radians)
+		}
+		set {
+			startAngle = Angle.radians(newValue.first)
+			endAngle = Angle.radians(newValue.second)
+		}
+	} // Angle in radians is a Double
+	
 	func path(in rect: CGRect) -> Path {
 		
 		let center = CGPoint(x: rect.midX, y: rect.midY)
@@ -33,4 +43,4 @@ struct Pie: Shape {
 		
 	}
 	
-}
+} // all Shape's assumed to be able to do animation (don't have to specify Anamatable protocol)
